@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16.4  # pinned, not "latest" (see D-002)
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"  # bound to localhost only
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # data survives container removal
+
+volumes:
+  pgdata:
