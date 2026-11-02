@@ -1,30 +1,35 @@
 CREATE TABLE IF NOT EXISTS categories
 (
     id          SERIAL PRIMARY KEY,
-    public_id   UUID         NOT NULL UNIQUE,
-    title       VARCHAR(255) NOT NULL,
+    public_id   UUID         NOT NULL UNIQUE default gen_random_uuid(),
+    title       VARCHAR(255) NOT NULL check (btrim(title) <> ''),
     description VARCHAR(255),
     icon        VARCHAR(255),
     level       SMALLINT     NOT NULL CHECK (level BETWEEN 1 AND 3),
-    parent_id   INT          CONSTRAINT fk_categories_parent REFERENCES categories (id),
+    parent_id   INT
+        CONSTRAINT fk_categories_parent REFERENCES categories (id),
     deleted_at  TIMESTAMPTZ,
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ  NOT NULL        DEFAULT now(),
+    updated_at  TIMESTAMPTZ  NOT NULL        DEFAULT now(),
 
     -- only level 1 has no parent 1:TOP, 2:SUB, 3:DET
-    CONSTRAINT chk_categories_root CHECK ((level = 1) = (parent_id IS NULL))
+    CONSTRAINT chk_categories_root CHECK ((level = 1) = (parent_id IS NULL)),
+    -- prevent category as its own parent
+    CONSTRAINT chk_categories_own_parent CHECK (parent_id != id)
+
 );
 
 CREATE TABLE IF NOT EXISTS products
 (
     id          SERIAL PRIMARY KEY,
-    public_id   UUID           NOT NULL UNIQUE,
+    public_id   UUID           NOT NULL UNIQUE default gen_random_uuid(),
     sku         VARCHAR(64)    NOT NULL,
-    title       VARCHAR(255)   NOT NULL,
+    title       VARCHAR(255)   NOT NULL CHECK ( btrim(title) <> '' ),
     description TEXT,
     price       NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
     currency    CHAR(3)        NOT NULL DEFAULT 'EUR',
-    category_id INT            NOT NULL CONSTRAINT fk_products_category REFERENCES categories (id),
+    category_id INT            NOT NULL
+        CONSTRAINT fk_products_category REFERENCES categories (id),
     deleted_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ    NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ    NOT NULL DEFAULT now(),
