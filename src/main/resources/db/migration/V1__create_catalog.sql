@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS categories
+CREATE TABLE categories
 (
     id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     public_id   UUID         NOT NULL UNIQUE default gen_random_uuid(),
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS categories
     icon        VARCHAR(255),
     level       SMALLINT     NOT NULL CHECK (level BETWEEN 1 AND 3),
     parent_id   BIGINT
-        CONSTRAINT fk_categories_parent REFERENCES categories (id),
+        CONSTRAINT fk_categories_parent REFERENCES categories (id) ON DELETE RESTRICT,
     deleted_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ  NOT NULL        DEFAULT now(),
     updated_at  TIMESTAMPTZ  NOT NULL        DEFAULT now(),
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS categories
 
 );
 
-CREATE TABLE IF NOT EXISTS products
+CREATE TABLE products
 (
     id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     public_id   UUID           NOT NULL UNIQUE default gen_random_uuid(),
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS products
     price       NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
     currency    CHAR(3)        NOT NULL        DEFAULT 'EUR',
     category_id BIGINT         NOT NULL
-        CONSTRAINT fk_products_category REFERENCES categories (id),
+        CONSTRAINT fk_products_category REFERENCES categories (id) ON DELETE RESTRICT,
     deleted_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ    NOT NULL        DEFAULT now(),
     updated_at  TIMESTAMPTZ    NOT NULL        DEFAULT now(),
@@ -38,5 +38,5 @@ CREATE TABLE IF NOT EXISTS products
 );
 
 -- SKU must be unique among non-deleted products
-CREATE UNIQUE INDEX IF NOT EXISTS uq_products_sku_active
+CREATE UNIQUE INDEX uq_products_sku_active
     ON products (sku) WHERE deleted_at IS NULL;
