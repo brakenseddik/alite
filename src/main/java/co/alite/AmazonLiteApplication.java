@@ -1,4 +1,4 @@
-package co.amazlite.amazonlite;
+package co.alite;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

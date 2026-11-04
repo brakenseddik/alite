@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS categories
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     public_id   UUID         NOT NULL UNIQUE default gen_random_uuid(),
     title       VARCHAR(255) NOT NULL check (btrim(title) <> ''),
     description VARCHAR(255),
     icon        VARCHAR(255),
     level       SMALLINT     NOT NULL CHECK (level BETWEEN 1 AND 3),
-    parent_id   INT
+    parent_id   BIGINT
         CONSTRAINT fk_categories_parent REFERENCES categories (id),
     deleted_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ  NOT NULL        DEFAULT now(),
@@ -21,18 +21,18 @@ CREATE TABLE IF NOT EXISTS categories
 
 CREATE TABLE IF NOT EXISTS products
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     public_id   UUID           NOT NULL UNIQUE default gen_random_uuid(),
     sku         VARCHAR(64)    NOT NULL,
     title       VARCHAR(255)   NOT NULL CHECK ( btrim(title) <> '' ),
     description TEXT,
     price       NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
-    currency    CHAR(3)        NOT NULL DEFAULT 'EUR',
-    category_id INT            NOT NULL
+    currency    CHAR(3)        NOT NULL        DEFAULT 'EUR',
+    category_id BIGINT         NOT NULL
         CONSTRAINT fk_products_category REFERENCES categories (id),
     deleted_at  TIMESTAMPTZ,
-    created_at  TIMESTAMPTZ    NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ    NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ    NOT NULL        DEFAULT now(),
+    updated_at  TIMESTAMPTZ    NOT NULL        DEFAULT now(),
 
     CONSTRAINT chk_products_sku_format CHECK (sku ~ '^[A-Z0-9][A-Z0-9._-]*$')
 );
