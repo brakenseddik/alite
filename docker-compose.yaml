@@ -4,7 +4,7 @@ services:
     container_name: postgres-container
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?DB name is a required field}
-      POSTGRES_USER: ${POSTGRES_USER:?DB user is a required field}
+      POSTGRES_USER: ${POSTGRES_USER:?DB username is a required field}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?DB password is a required field}
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
