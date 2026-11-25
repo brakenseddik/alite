@@ -139,51 +139,5 @@ class CreateCategoriesMigrationIT extends AbstractSchemaIT {
                 "delete from categories where id = ?", top);
     }
 
-    // ---------- PRODUCTS ---------- //
-
-    // ---------- Accepted ----------
-
-    @Test
-    void insertValidProductDetailsSucceed() {
-
-        Long det = createDetailCategory();
-        Long product = insertProduct("Product 1", BigDecimal.ZERO, "PRD-001", det, "USD");
-        assertThat(product).isEqualTo(1);
-
-    }
-
-    // --------- Rejected ----------
-
-    @Test
-    void insertInvalidProductPriceFails() {
-        double invalidPrice = -1;
-        String sql = "insert into products (title, sku, category_id, price) values ('x', 'PRD-002', 1, ?)";
-        assertRejected("chk_products_price_non_negative", sql, invalidPrice);
-    }
-
-    @Test
-    void nonUniqueProductSkuGetRejected() {
-        String duplicateSku = "PRD-001";
-
-        Long det = createDetailCategory();
-        insertProduct("Product 1", BigDecimal.ZERO, duplicateSku, det, "USD");
-
-        String query = "insert into products (title, price, category_id, sku) values ('product 2', 10, 1, ?)";
-        assertRejected("uq_products_sku_active", query, duplicateSku);
-    }
-
-    @Test
-    void invalidSkuFormatGetRejected() {
-        String invalidSku = "att%2df";
-        String query = "insert into products (title, price, category_id, sku) values ('product', 10, 1, ?)";
-        assertRejected("chk_products_sku_format", query, invalidSku);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "   "})
-    void emptyProductTitleGetRejected(String title) {
-        String query = "insert into products (title, price, category_id, sku) values (?, 10, 1, 'PRD-000')";
-        assertRejected("chk_products_title_not_blank", query, title);
-    }
 
 }

@@ -80,10 +80,4 @@ abstract class AbstractSchemaIT {
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessageContaining(expectedMessagePart);
     }
-
-  protected Long createDetailCategory(){
-        Long top = insertCategory("Top cat", 1, null);
-        Long sub = insertCategory("Sub cat", 2, top);
-        return insertCategory("Det cat", 3, sub);
-    }
 }
